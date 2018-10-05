@@ -1,0 +1,179 @@
+import ast
+
+def mat_mul(A, B):
+
+    num_linhas_A, num_colunas_A = len(A), len(A[0])
+    num_linhas_B, num_colunas_B = len(B), len(B[0])
+
+    C=[]
+    for linha in range(num_linhas_A):
+        C.append([])
+        for Ocoluna in range(num_colunas_B):
+            C[linha].append(0)
+            for k in range(num_colunas_A):
+                C[linha][coluna] += A[linha][k]*B[k][coluna]
+    return C
+
+A=ast.literal_eval(input())
+B=ast.literal_eval(input())
+qnt_w=int(input())
+word=[]
+
+Xw_A=[]
+Xw_B=[]
+
+
+for i in range(0, qnt_w, 1):
+    w=input()
+    word.append(w)
+
+matrizPI_A=[]
+matrizPI_AT=[]
+matrizN_A=[]
+matrizPI_B=[]
+matrizPI_BT=[]
+matrizN_B=[]
+
+Xa_A=[]
+Xb_A=[]
+Xa_B=[]
+Xb_B=[]
+
+
+
+#matrizPI_A=[[1][2][3][4]]
+#matrizN_A=[[1][2][3][4]]
+#matrizPI_B=[[1][2][3][4]]
+#matrizN_B=[[1][2][3][4]]
+
+#MATRIZES PIs E N
+
+for i in range(0, A['estados'], 1):
+    listaInterna=[]
+    for j in range(0, 1, 1):
+        if(i==A['inicial']):
+            listaInterna.append(1)
+        else:
+            listaInterna.append(0)
+    matrizPI_A.append(listaInterna)
+
+for i in range(0, B['estados'], 1):
+    listaInterna=[]
+    for j in range(0, 1, 1):
+        if(i==B['inicial']):
+            listaInterna.append(1)
+        else:
+            listaInterna.append(0)
+    matrizPI_B.append(listaInterna)
+
+
+for i in range(0, A['estados'], 1):
+    c=0
+    listaInterna=[]
+    for j in range(0, len(A['final']), 1):
+        if(i==A['final'][j]):
+            listaInterna.append(1)
+            matrizN_A.append(listaInterna)
+            c=1
+            break
+    if(c==0):
+        listaInterna.append(0)
+        matrizN_A.append(listaInterna)
+
+for i in range(0, B['estados'], 1):
+    c=0
+    listaInterna=[]
+    for j in range(0, len(B['final']), 1):
+        if(i==B['final'][j]):
+            listaInterna.append(1)
+            matrizN_B.append(listaInterna)
+            c=1
+            break
+    if(c==0):
+        listaInterna.append(0)
+        matrizN_B.append(listaInterna)
+
+
+#MATRIZES Xa E Xb DE A
+
+
+for i in range(0, A['estados'], 1):
+    listaInterna=[]
+    for j in range(0, A['estados'], 1):
+        if(j==A['delta'][i][0]):
+            listaInterna.append(1)
+        else:
+            listaInterna.append(0)
+    Xa_A.append(listaInterna)
+
+for i in range(0, A['estados'], 1):
+    listaInterna=[]
+    for j in range(0, A['estados'], 1):
+        if(j==A['delta'][i][1]):
+            listaInterna.append(1)
+        else:
+            listaInterna.append(0)
+    Xb_A.append(listaInterna)
+
+#MATRIZES Xa E Xb DE B
+
+for i in range(0, B['estados'], 1):
+    listaInterna = []
+    for j in range(0, B['estados'], 1):
+        if (j == B['delta'][i][0]):
+            listaInterna.append(1)
+        else:
+            listaInterna.append(0)
+    Xa_B.append(listaInterna)
+
+for i in range(0, B['estados'], 1):
+    listaInterna = []
+    for j in range(0, B['estados'], 1):
+        if (j == B['delta'][i][1]):
+            listaInterna.append(1)
+        else:
+            listaInterna.append(0)
+    Xb_B.append(listaInterna)
+
+#MATRIZ PI TRANSPOSTA:
+
+for i in range(0, 1, 1):
+    listaInterna = []
+    for j in range(0, A['estados'], 1):
+        listaInterna.append(matrizPI_A[j][i])
+    matrizPI_AT.append(listaInterna)
+
+for i in range(0, 1, 1):
+    listaInterna = []
+    for j in range(0, B['estados'], 1):
+        listaInterna.append(matrizPI_B[j][i])
+    matrizPI_BT.append(listaInterna)
+
+#MULTIPLICAÇÃO DAS MATRIZES Xw_A e Xw_B:
+
+for i in range(0, qnt_w, 1):
+    for j in range(0, len(word[i]), 1):
+        if(j==0):
+            if (word[i][j] == 'a'):
+                Xw_A = mat_mul(matrizPI_AT, Xa_A)
+                Xw_B = mat_mul(matrizPI_BT, Xa_B)
+            if (word[i][j] == 'b'):
+                Xw_A = mat_mul(matrizPI_AT, Xb_A)
+                Xw_B = mat_mul(matrizPI_BT, Xb_B)
+        else:
+            if(word[i][j] == 'a'):
+                Xw_A = mat_mul(Xw_A, Xa_A)
+                Xw_B = mat_mul(Xw_B, Xa_B)
+
+            if(word[i][j] == 'b'):
+                Xw_A = mat_mul(Xw_A, Xb_A)
+                Xw_B = mat_mul(Xw_B, Xb_B)
+
+    Xw_A = mat_mul(Xw_A, matrizN_A)
+    Xw_B = mat_mul(Xw_B, matrizN_B)
+
+    if(Xw_A[0][0]==1 or Xw_B[0][0]==1):
+        print("ACEITA")
+    else:
+        print("REJEITA")
+
